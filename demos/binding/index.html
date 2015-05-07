@@ -1,0 +1,32 @@
+<html>
+    
+    <head>
+        <script src="../../js/EventEmitter.js" ></script>
+        <script src="../../js/ViewModel.js" ></script>
+        <script src="../../js/Binding.js" ></script>
+       
+        
+    </head>
+    
+    <body>
+        
+        <div id="container" >
+            
+            <div>{$var1} {$var2}</div>
+            
+        </div>
+        
+        
+        
+        
+        
+        <script>
+            var model = new ViewModel(document.getElementById('container'), {var1 : 'kur', var2 : 'zaspal'});
+            model.render();
+            
+        </script>
+        
+        
+    </body>
+    
+</html>
