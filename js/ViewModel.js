@@ -35,10 +35,6 @@ ViewModel.prototype.traverse = function (elem) {
 ViewModel.prototype.scanNode = function (node) {
 	var self = this, i, attName, attValue;
 
-	node.modelId = this.nodesCount++;
-	
-
-
 	if (node.nodeType === 3) {
 		(node.nodeValue.match(/{\$(\w+)}/ig) || []).map(function (elem) {
 			return elem.replace(/{\$/, '').replace('}', '');
@@ -68,12 +64,19 @@ ViewModel.prototype.scanNode = function (node) {
 
 
 ViewModel.prototype.addBinding = function (name, node, accessProperty, value) {
-	var binding = new Binding(name, node, accessProperty, value);
+	var binding;
 	var self = this;
+	var modelId = 'node_' + this.nodesCount++;
 	
-	binding.on('change', function(data){
+	node = DOMWrapperFactory.create(node, modelId);
+	binding = new Binding(name, node, accessProperty, value);;
+	
+	
+	node.on('update', function(data){
+		console.log(data);
 		self.setValue(name, data.value);
 	});
+	
 	
 	if(!this.bindings[name]){
 		this.bindings[name] = [];
@@ -126,7 +129,7 @@ ViewModel.prototype.render = function () {
 			node = binding.getNode();
 			accessProperty = binding.getAccessProperty();
 			changeKey = node.modelId + '_' + accessProperty;
-
+			
 			if (self.data[i] !== binding.getValue() && chengeList.indexOf(changeKey) < 0) {
 				chengeList.push(changeKey);
 				self.bindingsByNodes[node.modelId].forEach(function (binding) {

@@ -7,7 +7,11 @@ function Binding(name, node, accessProperty, value) {
 	this.value = value;
 	this.originalContent = node.nodeType === 3 ? node.nodeValue : node.getAttribute(this.accessProperty);
 	
-	this.assignHandlers();
+	
+	var self = this;
+	this.node.on('update', function(data){
+		//self.emit('chenge', data);
+	});
 }
 
 
@@ -30,7 +34,7 @@ Binding.prototype.getAccessProperty = function(){
 
 
 
-Binding.prototype.setValue = function (value) {
+Binding.prototype.setValue = function (value) {console.log(value);
 	if (value === this.value) {
 		//return;
 	}
@@ -51,7 +55,7 @@ Binding.prototype.getValue = function () {
 
 
 Binding.prototype.updateNodes = function () {
-	var currentContent = this.node.nodeType === 3 ? this.node.nodeValue : this.node.getAttribute(this.accessProperty);
+	var currentContent = this.node.getAttribute(this.accessProperty);
 	var content;
 	if(currentContent.indexOf('{$' + this.name + '}') < 0) {
 		content = this.originalContent.replace(new RegExp('{\\$' + this.name + '}', 'ig'), this.value);
@@ -59,6 +63,9 @@ Binding.prototype.updateNodes = function () {
 		content = currentContent.replace(new RegExp('{\\$' + this.name + '}', 'ig'), this.value);
 	}
 
+	
+	this.node.setAttribute(this.accessProperty, content);
+	return;
 	
 	if (this.node.nodeType === 3) {
 		this.node.nodeValue = content;
@@ -72,30 +79,3 @@ Binding.prototype.updateNodes = function () {
 };
 
 
-Binding.prototype.assignHandlers = function(){
-	var self = this;
-	var nodeName = this.node.nodeName.toUpperCase();
-
-	
-	if(this.node.nodeType === 3){ // fucking textarea :(
-		if(this.node.parentNode.nodeName === 'TEXTAREA'){
-			this.node.parentNode.addEventListener('keyup', function(){
-				self.emit('change', {value : self.node.parentNode.value});
-			});
-		}
-		
-	} else {
-		if(nodeName === 'INPUT'){
-			this.node.addEventListener('keyup', function(){
-				self.emit('change', {value : self.node.value});
-			});
-		}
-		if(nodeName === 'SELECT'){
-			this.node.addEventListener('change', function(){
-				self.emit('change', {value : self.node.value});
-			});
-		}
-	}
-	
-	
-};
