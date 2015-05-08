@@ -1,19 +1,43 @@
 <html>
-    
+   
     <head>
+        
+        
         <script src="../../js/EventEmitter.js" ></script>
         <script src="../../js/ViewModel.js" ></script>
         <script src="../../js/Binding.js" ></script>
+        
+        
+        <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"  />
        
         
     </head>
     
     <body>
         
-        <div id="container" >
-            
-            <div>{$var1} {$var2}</div>
-            
+        <div id="container" class="container" >
+            <table class="table-condensed table-bordered">
+                <tr>
+                    <td><input type="text" size="5" value="{$var1}" /></td>
+                    <td>{$var1}</td>
+                </tr>
+                <tr>
+                    <td><input type="text" size="5" value="{$var2}" /></td>
+                    <td>{$var2}</td>
+                </tr>
+                <tr >
+                    <td >
+                        <textarea>{$var3}</textarea>
+                    </td>
+                    <td >
+                        <p>{$var3}</p>
+                    </td>
+                </tr>
+                
+                
+            </table>
+            <input id="btn" type="button" class="btn-success" value="random values" /> 
+
         </div>
         
         
@@ -21,8 +45,15 @@
         
         
         <script>
-            var model = new ViewModel(document.getElementById('container'), {var1 : 'kur', var2 : 'zaspal'});
-            model.render();
+            var model = new ViewModel(document.getElementById('container'), {var1 : 11, var2 : 22, var3 : "33"});
+            
+            document.getElementById('btn').addEventListener('click', function(){
+                model.setData({
+                    var1 : Math.round(Math.random() * 10000),
+                    var2 : Math.round(Math.random() * 10000),
+                    var3 : Math.round(Math.random() * 10000)
+                });
+            });
             
         </script>
         
