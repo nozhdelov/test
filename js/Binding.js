@@ -65,17 +65,7 @@ Binding.prototype.updateNodes = function () {
 
 	
 	this.node.setAttribute(this.accessProperty, content);
-	return;
 	
-	if (this.node.nodeType === 3) {
-		this.node.nodeValue = content;
-		if(this.node.parentNode && this.node.parentNode.nodeName.toUpperCase() === 'TEXTAREA'){
-			this.node.parentNode.value = content;
-		}
-	} else {
-		//this.node.setAttribute(this.accessProperty, this.value);
-		this.node[this.accessProperty] = this.value;
-	}
 };
 
 

@@ -1,8 +1,9 @@
 'use strict';
 
 function ViewModel(DOMTree, data) {
+	var self = this;
 	this.DOMTree = DOMTree;
-
+	
 	if (!this.DOMTree instanceof HTMLElement) {
 		throw new Error('Invalid DOM element');
 	}
@@ -12,20 +13,22 @@ function ViewModel(DOMTree, data) {
 	this.data = data || {};
 	this.nodesCount = 0;
 
-	this.traverse(this.DOMTree);
+	this.traverse(this.DOMTree, function(node){
+		self.scanNode(node);
+	});
 	this.render();
 }
 
 
-ViewModel.prototype.traverse = function (elem) {
+ViewModel.prototype.traverse = function (elem, callback) {
 	var node = elem.firstChild;
 	if (!node) {
 		return;
 	}
-	this.scanNode(node);
+	callback(node);
 
 	while (node) {
-		this.traverse(node);
+		this.traverse(node, callback);
 		node = node.nextSibling;
 	}
 
@@ -62,6 +65,13 @@ ViewModel.prototype.scanNode = function (node) {
 };
 
 
+ViewModel.prototype.scanForBindings = function(node){
+	var self = this;
+	this.scanNode(node, function(){
+		
+	});
+};
+
 
 ViewModel.prototype.addBinding = function (name, node, accessProperty, value) {
 	var binding;
@@ -73,7 +83,6 @@ ViewModel.prototype.addBinding = function (name, node, accessProperty, value) {
 	
 	
 	node.on('update', function(data){
-		console.log(data);
 		self.setValue(name, data.value);
 	});
 	
