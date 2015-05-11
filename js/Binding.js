@@ -8,10 +8,6 @@ function Binding(name, node, accessProperty, value) {
 	this.originalContent = node.nodeType === 3 ? node.nodeValue : node.getAttribute(this.accessProperty);
 	
 	
-	var self = this;
-	this.node.on('update', function(data){
-		//self.emit('chenge', data);
-	});
 }
 
 
@@ -34,17 +30,14 @@ Binding.prototype.getAccessProperty = function(){
 
 
 
-Binding.prototype.setValue = function (value) {console.log(value);
+Binding.prototype.setValue = function (value) {
 	if (value === this.value) {
 		//return;
 	}
-	var oldValue = this.value;
 	this.value = value;
 
-
-	if (this.node) {
-		this.updateNodes();
-	}
+	this.updateNodes();
+	
 
 };
 
@@ -63,7 +56,7 @@ Binding.prototype.updateNodes = function () {
 		content = currentContent.replace(new RegExp('{\\$' + this.name + '}', 'ig'), this.value);
 	}
 
-	
+console.log(content);
 	this.node.setAttribute(this.accessProperty, content);
 	
 };

@@ -51,6 +51,12 @@ DOMWrapperBase.prototype.setAttribute = function(attribute, value){
 
 
 
+DOMWrapperBase.prototype.getElementType = function(){
+	return this.elment.nodeType;
+};
+
+
+
 
 
 

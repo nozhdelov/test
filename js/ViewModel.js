@@ -12,20 +12,35 @@ function ViewModel(DOMTree, data) {
 	this.bindingsByNodes = {};
 	this.data = data || {};
 	this.nodesCount = 0;
+	
+	this.traverse(this.DOMTree, function(node){
+		console.log(node);
+		self.scanForContorlTags(node);
+	});
 
 	this.traverse(this.DOMTree, function(node){
 		self.scanNode(node);
 	});
+	
 	this.render();
 }
 
 
-ViewModel.prototype.traverse = function (elem, callback) {
-	var node = elem.firstChild;
-	if (!node) {
+
+
+
+ViewModel.prototype.traverse = function (node, callback) {
+	//var node = elem.firstChild;//? elem.firstChild : elem.nextSibling;
+	if (node) {
+		callback(node);
+	}
+	node = node.firstChild;
+	
+	if(!node){
 		return;
 	}
-	callback(node);
+	
+	//callback(node);
 
 	while (node) {
 		this.traverse(node, callback);
@@ -39,7 +54,7 @@ ViewModel.prototype.scanNode = function (node) {
 	var self = this, i, attName, attValue;
 
 	if (node.nodeType === 3) {
-		(node.nodeValue.match(/{\$(\w+)}/ig) || []).map(function (elem) {
+		(node.nodeValue.match(/{\$(\w+(.|)\w+(.|)\w+)}/ig) || []).map(function (elem) {
 			return elem.replace(/{\$/, '').replace('}', '');
 		}).forEach(function (elem) {
 			self.addBinding(elem, node, 'nodeValue', node.nodeValue);
@@ -54,7 +69,7 @@ ViewModel.prototype.scanNode = function (node) {
 		attName = node.attributes[i].nodeName;
 	
 		
-		(attValue.match(/{\$(\w+)}/ig) || []).map(function (elem) {
+		(attValue.match(/{\$(\w+(.|)\w+(.|)\w+)}/ig) || []).map(function (elem) {
 			return elem.replace(/{\$/, '').replace('}', '');
 		}).forEach(function (elem) {
 			self.addBinding(elem, node, attName, attValue);
@@ -65,11 +80,13 @@ ViewModel.prototype.scanNode = function (node) {
 };
 
 
-ViewModel.prototype.scanForBindings = function(node){
+ViewModel.prototype.scanForContorlTags = function(node){
 	var self = this;
-	this.scanNode(node, function(){
-		
-	});
+	var name = node.nodeName.toUpperCase();
+	if(ControlTagFactory.tags.indexOf(name) >= 0){
+		ControlTagFactory.create(node, this.data).execute();
+	}
+	
 };
 
 
@@ -125,30 +142,50 @@ ViewModel.prototype.render = function () {
 	var self = this;
 	var chengeList = [], changeKey;
 
+	
+	var executeData = function(key, data){console.log(key, 'sfsdd');
+		var i, value;
+		if(Utils.isArray(data)){
+			data.forEach(function(elem, idx){
+				var k = key + '.' + idx;
+				executeData(k, elem);
+			});
+		} else if(data && typeof data === 'object') {
+			Object.keys(data).forEach(function(elem, idx){
+				var k = key + '.'  + elem;
+				executeData(k, data[elem]);
+			});
+		} else {
+			//console.log('sdfsd', key, self.bindings[key]);
+			if (self.bindings[key] === undefined) {
+				return;
+			}	
+			
+			value = Utils.getNestedValue(key, self.data);
+			
+			self.bindings[key].forEach(function(binding){
+				node = binding.getNode();
+				accessProperty = binding.getAccessProperty();
+				changeKey = node.modelId + '_' + accessProperty;
+		
+				if (self.data[key] !== binding.getValue() && chengeList.indexOf(changeKey) < 0) {
+					chengeList.push(changeKey);
+					self.bindingsByNodes[node.modelId].forEach(function (binding) {
+						if (binding.getAccessProperty() === accessProperty) {
+							binding.setValue(value);
+						}
+					});
+				}
+			});
+		}
+	};
+
 	for (i in this.data) {
 		if (!this.data.hasOwnProperty(i)) {
 			continue;
 		}
 
-		if (this.bindings[i] === undefined) {
-			continue;
-		}
-		
-		this.bindings[i].forEach(function(binding){
-			node = binding.getNode();
-			accessProperty = binding.getAccessProperty();
-			changeKey = node.modelId + '_' + accessProperty;
-			
-			if (self.data[i] !== binding.getValue() && chengeList.indexOf(changeKey) < 0) {
-				chengeList.push(changeKey);
-				self.bindingsByNodes[node.modelId].forEach(function (binding) {
-					if (binding.getAccessProperty() === accessProperty) {
-						binding.setValue(self.data[binding.getName()]);
-					}
-				});
-			}
-		});
-
+		executeData(i, this.data[i]);
 		
 
 	}

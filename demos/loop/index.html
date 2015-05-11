@@ -1,0 +1,49 @@
+<html>
+   
+    <head>
+        
+        
+        <script src="../../js/EventEmitter.js" ></script>
+        <script src="../../js/Utils.js" ></script>
+	<script src="../../js/ViewModel.js" ></script>
+	<script src="../../js/DOMWrappers.js" ></script>
+        <script src="../../js/Binding.js" ></script>
+        <script src="../../js/ControlTags.js" ></script>
+        
+        
+        <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"  />
+       
+        
+    </head>
+    
+    <body>
+        
+        <div id="container" class="container" >
+            <div class="">
+            <loop source="data" key="id" value="value" >
+                <p>{$value.fname} {$value.lname}</p>
+                
+            </loop>
+            </div>
+        </div>
+        
+  
+        
+        
+        
+        <script>
+            var data =  {data : [
+                    {fname : 'Bai1', lname : 'Hoi1'},
+                    {fname : 'Bai2', lname : 'Hoi2'},
+                    {fname : 'Bai3', lname : 'Hoi3'}
+                ]};
+            var model = new ViewModel(document.getElementById('container'), data);
+            
+            
+            
+        </script>
+        
+        
+    </body>
+    
+</html>
