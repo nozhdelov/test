@@ -1,0 +1,89 @@
+<html>
+   
+    <head>
+        
+        
+        <script src="../../js/EventEmitter.js" ></script>
+        <script src="../../js/Utils.js" ></script>
+	<script src="../../js/ViewModel.js" ></script>
+	<script src="../../js/DOMWrappers.js" ></script>
+        <script src="../../js/Binding.js" ></script>
+        <script src="../../js/ControlTags.js" ></script>
+        
+        
+        <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"  />
+       
+        
+    </head>
+    
+    <body>
+        
+        <div id="container" class="" >
+            <span style="position: absolute; display:block; width: 50px; height: 50px; left:{$x1}px; top:{$y1}px; background-color: red" > </span>
+            <span style="position: absolute; display:block; width: 50px; height: 50px; left:{$x2}px; top:{$y2}px; background-color: red" ></span>
+            <span style="position: absolute; display:block; width: 50px; height: 50px; left:{$x3}px; top:{$y3}px; background-color: red" ></span>
+            <span style="position: absolute; display:block; width: 50px; height: 50px; left:{$x4}px; top:{$y4}px; background-color: red" ></span>
+            <span style="position: absolute; display:block; width: 50px; height: 50px; left:{$x5}px; top:{$y5}px; background-color: red" ></span>
+        </div>
+
+  
+         <!-- 
+           -->
+        
+        
+        <script>
+            var data =  {
+                    x1 : 400, y1 : 150,
+                    x2 : 350, y2 : 200,
+                    x3 : 375, y3 : 175,
+                    x4 : 425, y4 : 200,
+                    x5 : 475, y5 : 250
+            };
+            var model = new ViewModel(document.getElementById('container'), data);
+            
+            
+            var speedX = 17;
+            var speedY = 12;
+            var angle = 0;
+            var angle2 = 0;
+            var angle3 = 0;
+            var angle4 = 0;
+            var angle5 = 0;
+            
+            var animate = function(){
+                    
+                    data.x1 += Math.cos(angle) * speedX;
+                    data.y1 += Math.sin(angle) * speedY;
+                    
+                    data.x2 += Math.cos(angle2) * speedX;
+                    data.y2 += Math.sin(angle2) * speedY;
+                    
+                    data.x3 += Math.cos(angle3) * speedX;
+                    data.y3 += Math.sin(angle3) * speedY;
+                    
+                    data.x4 += Math.cos(angle4) * speedX;
+                    data.y4 += Math.sin(angle4) * speedY;
+                    
+                    data.x5 += Math.cos(angle5) * speedX;
+                    data.y5 += Math.sin(angle5) * speedY;
+                    
+                    model.setData(data);
+                    
+                    angle += 0.05;
+                    angle2 += 0.1;
+                    angle3 -= 0.15;
+                    angle4 += 0.2;
+                    angle5 += 0.25;
+                    
+                    window.requestAnimationFrame(animate);
+            };
+            
+            window.requestAnimationFrame(animate);
+            
+            
+        </script>
+        
+        
+    </body>
+    
+</html>

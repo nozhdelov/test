@@ -1,13 +1,12 @@
 'use strict';
 
 function DOMWrapperBase(element, modelId){
-	if (!element instanceof HTMLElement) {
-		throw new Error('Invalid DOM element');
+	if (element instanceof HTMLElement) {
+		this.element = element;
+		
 	}
-	
-	
-	this.element = element;
 	this.modelId = modelId;
+	this.attributeValues = {};
 	
 }
 
@@ -45,7 +44,7 @@ DOMWrapperBase.prototype.setAttribute = function(attribute, value){
 	if(attribute === 'value' || attribute === 'nodeValue'){
 		this.element[attribute] = value;
 	} else {
-		this.element.getAttribute(attribute, value);
+		this.element.setAttribute(attribute, value);
 	}
 };
 
@@ -61,38 +60,41 @@ DOMWrapperBase.prototype.getElementType = function(){
 
 
 function DOMWrapperInput(element, modelId){
-	DOMWrapperBase.call(this, element, modelId);
+	this.element = element;
+	this.modelId = modelId;
 	var self = this;
 	this.element.addEventListener('keyup', function(){
 		self.emit('update', {value : self.element.value});
 	});
 }
-DOMWrapperInput.prototype = DOMWrapperBase.prototype;
+DOMWrapperInput.prototype = new DOMWrapperBase();
 
 
 function DOMWrapperSelect(element, modelId){
-	DOMWrapperBase.apply(this, [element, modelId]);
+	this.element = element;
+	this.modelId = modelId;
 	var self = this;
 	this.element.addEventListener('change', function(){
 		self.emit('update', {value : self.element.value});
 	});
 }
 
-DOMWrapperSelect.prototype = DOMWrapperBase.prototype;
+DOMWrapperSelect.prototype = new DOMWrapperBase();
 
 
 
 function DOMWrapperTextNode(element, modelId){
-	DOMWrapperBase.apply(this, [element, modelId]);
+	this.element = element;
+	this.modelId = modelId;
 	var self = this;
-	if(this.element.parentNode.nodeName.toUpperCase() === 'TEXTAREA'){
+	if(this.element.parentNode && this.element.parentNode.nodeName.toUpperCase() === 'TEXTAREA'){
 		this.element.parentNode.addEventListener('keyup', function(){
 			self.emit('update', {value : self.element.parentNode.value});
 		});
 	}
 }
 
-DOMWrapperTextNode.prototype = DOMWrapperBase.prototype;
+DOMWrapperTextNode.prototype = new DOMWrapperBase();
 
 
 DOMWrapperTextNode.prototype.setAttribute = function(attribute, value){

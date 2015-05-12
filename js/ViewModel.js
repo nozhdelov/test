@@ -14,7 +14,6 @@ function ViewModel(DOMTree, data) {
 	this.nodesCount = 0;
 	
 	this.traverse(this.DOMTree, function(node){
-		console.log(node);
 		self.scanForContorlTags(node);
 	});
 
@@ -54,7 +53,7 @@ ViewModel.prototype.scanNode = function (node) {
 	var self = this, i, attName, attValue;
 
 	if (node.nodeType === 3) {
-		(node.nodeValue.match(/{\$(\w+(.|)\w+(.|)\w+)}/ig) || []).map(function (elem) {
+		(node.nodeValue.match(/{\$(\w+((.|)\w+(.|)|)\w+)}/ig) || []).map(function (elem) {
 			return elem.replace(/{\$/, '').replace('}', '');
 		}).forEach(function (elem) {
 			self.addBinding(elem, node, 'nodeValue', node.nodeValue);
@@ -69,7 +68,7 @@ ViewModel.prototype.scanNode = function (node) {
 		attName = node.attributes[i].nodeName;
 	
 		
-		(attValue.match(/{\$(\w+(.|)\w+(.|)\w+)}/ig) || []).map(function (elem) {
+		(attValue.match(/{\$(\w+((.|)\w+(.|)|)\w+)}/ig) || []).map(function (elem) {
 			return elem.replace(/{\$/, '').replace('}', '');
 		}).forEach(function (elem) {
 			self.addBinding(elem, node, attName, attValue);
@@ -143,7 +142,7 @@ ViewModel.prototype.render = function () {
 	var chengeList = [], changeKey;
 
 	
-	var executeData = function(key, data){console.log(key, 'sfsdd');
+	var executeData = function(key, data){
 		var i, value;
 		if(Utils.isArray(data)){
 			data.forEach(function(elem, idx){
@@ -156,7 +155,6 @@ ViewModel.prototype.render = function () {
 				executeData(k, data[elem]);
 			});
 		} else {
-			//console.log('sdfsd', key, self.bindings[key]);
 			if (self.bindings[key] === undefined) {
 				return;
 			}	
@@ -167,10 +165,11 @@ ViewModel.prototype.render = function () {
 				node = binding.getNode();
 				accessProperty = binding.getAccessProperty();
 				changeKey = node.modelId + '_' + accessProperty;
-		
+				
 				if (self.data[key] !== binding.getValue() && chengeList.indexOf(changeKey) < 0) {
 					chengeList.push(changeKey);
 					self.bindingsByNodes[node.modelId].forEach(function (binding) {
+						
 						if (binding.getAccessProperty() === accessProperty) {
 							binding.setValue(value);
 						}
